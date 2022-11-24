@@ -1,0 +1,108 @@
+from statsbombpy import sb
+sb.competitions()
+sb.matches(competition_id=16,season_id=4)
+events = sb.events(match_id=22912)
+
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer.pitch import Pitch
+import seaborn as sns
+
+# What columns are in the DF
+events.columns
+
+# Create DF and columns needed
+events = events[['team', 'player', 'location', 'type', 'minute', 'pass_end_location',  'pass_outcome']]
+events = events[events['team']=="Liverpool"].reset_index()
+
+# Replace NaN with 0
+events = events.fillna(value='0')
+
+# Replace NaN with 0
+events = events.fillna(value='0')
+
+# String accessor
+events['location'].str
+
+# Drop index column
+events = events.drop(['index'],axis=1)
+
+# Drop rows from DF
+events.drop(index=2, inplace=True)
+
+# AttributeError: Can only use .str accessor with string values!
+events['location'] = events['location'].astype(str).str.replace('[', '').str.replace(']','')
+
+# Removing special characters
+events['location'].str.replace('[','').str.replace(']','')
+
+# Drop rows from DF
+events.drop(index=1295, inplace=True)
+
+# Drop rows from DF
+events.drop(index=1295, inplace=True)
+
+# Drop rows from DF
+events.drop(index=1295, inplace=True)
+
+# Creating 2 new columns
+events[['endX','endY']]=events.pass_end_location.str.split(pat=',',expand=True)
+print(events)
+
+events[['endX','endY']]=events.pass_end_location.str.split(pat=',',expand=True)
+print(events)
+
+# Drop index column
+events = events.drop(['location', 'pass_end_location'],axis=1)
+
+events.head()
+
+events.head()
+
+#Drop NaN
+events = events.dropna()
+
+# start from 0 again
+events = events.reset_index()
+
+#convert the data to match the mplsoccer statsbomb pitch
+#to see how to create the pitch, watch the video here: https://www.youtube.com/watch?v=55k1mCRyd2k
+events['X'] = events['X']*1.2
+events['Y'] = events['Y']*.8
+events['endX'] = events['endX']*1.2
+events['endY'] = events['endY']*.8
+
+# Convert multiple columns from string to float
+events = events.astype({'X':'float','Y':'float', 'endY':'float', 'endX':'float'})
+
+# Creating separate DataFrames per player
+MohamedSalah = events[events['player'] == 'Mohamed Salah']
+MohamedSalah.reset_index(inplace=True)
+
+# Drop index column
+MohamedSalah = MohamedSalah.drop(['level_0', 'index'],axis=1)
+
+fig ,ax = plt.subplots(figsize=(13.5,8))
+fig.set_facecolor('#22312b')
+ax.patch.set_facecolor('#22312b')
+
+#this is how we create the pitch
+pitch = Pitch(pitch_type='statsbomb', orientation='horizontal',
+              pitch_color='#22312b', line_color='#c7d5cc', figsize=(13, 8),
+              constrained_layout=False, tight_layout=True)
+
+#Draw the pitch on the ax figure as well as invert the axis for this specific pitch
+pitch.draw(ax=ax)
+plt.gca().invert_yaxis()
+
+#use a for loop to plot each pass
+for x in range(len(MohamedSalah['X'])):
+    if MohamedSalah['pass_outcome'][x] == 'Successful':
+        plt.plot((df['X'][x],MohamedSalah['endX'][x]),(MohamedSalah['Y'][x],MohamedSalah['endY'][x]),color='green')
+        plt.scatter(MohamedSalah['X'][x],MohamedSalah['Y'][x],color='green')
+    if MohamedSalah['pass_outcome'][x] == 'Incomplete':
+        plt.plot((MohamedSalah['X'][x],MohamedSalah['endX'][x]),(MohamedSalah['Y'][x],MohamedSalah['endY'][x]),color='red')
+        plt.scatter(MohamedSalah['X'][x],MohamedSalah['Y'][x],color='red')
+
+plt.title('MohamedSalah Map vs Tottenham',color='white',size=20)
