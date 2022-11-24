@@ -106,3 +106,5 @@ for x in range(len(MohamedSalah['X'])):
         plt.scatter(MohamedSalah['X'][x],MohamedSalah['Y'][x],color='red')
 
 plt.title('MohamedSalah Map vs Tottenham',color='white',size=20)
+
+Thanks to @StatsBomb for the data
